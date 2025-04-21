@@ -1,5 +1,5 @@
 #ifndef EVENTBUF_H
-#define EVENTBUF_H
+#define EVENTBUF_H 1
 
 /*
  * Functions:

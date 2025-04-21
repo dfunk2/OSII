@@ -1,5 +1,7 @@
 #include <stdlib.h>
+#include <semaphore.h>
 #include "eventbuf.h"
+
 
 struct eventbuf_node {
     int event;
@@ -21,7 +23,6 @@ void eventbuf_free(struct eventbuf *eb){
 }
 
 int eventbuf_add(struct eventbuf *eb, int event){
-    //sem_wait(sem);
     struct eventbuf_node *node = malloc(sizeof *node);
     if (node == NULL) return -1;
 
@@ -34,12 +35,10 @@ int eventbuf_add(struct eventbuf *eb, int event){
         eb->tail->next = node;
         eb->tail = node;
     }
-    //sem_post(sem);
     return 0;
 }
 
 int eventbuf_get(struct eventbuf *eb){
-    //sem_wait(sem);
     if (eb->head == NULL) return 0;
 
     struct eventbuf_node *node = eb->head;
@@ -48,7 +47,6 @@ int eventbuf_get(struct eventbuf *eb){
     eb->head = eb->head->next;
 
     free(node);
-
     return event;
 }
 
