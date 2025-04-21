@@ -11,7 +11,6 @@ sem_t *mutex;
 
 struct eventbuf *eb;
 
-int *event_buffer = 0;
 int producer;
 int consumer;
 int event_per_producer;
@@ -47,8 +46,8 @@ void* producer_thread(void *arg){
         printf("P%d: %s %d\n", *id, "adding event", num_events);
         sem_post(mutex);
         //post to items semaphore indicating an event is available for consumption
-        
         sem_post(items);
+        
     }
     return NULL;
 }
@@ -60,17 +59,18 @@ void *consumer_thread(void * arg){
     //get event and print consumption message, unlock the queue mutex
     sem_wait(mutex);
     int event_retrieved = eventbuf_get(eb);
+    printf("C%d: %s %d\n", *id, "got event", event_retrieved);
     sem_post(mutex);     
     
-    printf("C%d: %s %d\n", *id, "got event", event_retrieved);
     
-    //post to spaces semaphore indicates are available
-
     sem_post(spaces);     
+
     return NULL;
 }
 
 int main (int argc, char* argv[]){
+    //global variable to indicate producers are done
+    int producers_done = 0;
 
     //parse command line
     if(argc < 4){
@@ -88,8 +88,6 @@ int main (int argc, char* argv[]){
 
     //create event buff
     eb = eventbuf_create();
-
-    event_buffer = calloc(event_per_producer, sizeof *event_buffer);
     
     pthread_t *pthread = calloc(producer, sizeof *pthread);
     int *procID_thread = calloc(producer, sizeof *procID_thread);
@@ -119,10 +117,12 @@ int main (int argc, char* argv[]){
         pthread_join(pthread[k], NULL);
     }
 
-    //notify all the consumer threads that they're done
-   /* for(int x = 0; x < consumer; x++){
-        sem_close(sem);
-    }*/
+    producers_done = 1;
+    //notify all the consumer threads that producers are done
+   for(int x = 0; x < consumer; x++){
+        sem_post(items);
+    }
+    
 
     //wait for all consumer threads to complete
     for(int z = 0; z < consumer; z++){
@@ -130,9 +130,13 @@ int main (int argc, char* argv[]){
     }
 
     //free the event buffer
-    free(event_buffer);
     free(pthread);
     free(procID_thread);
     free(cthread);
     free(CID_thread);
+
+    //done using semaphores
+    sem_close(mutex);
+    sem_close(spaces);
+    sem_close(items);
 }
