@@ -1,0 +1,244 @@
+Part 1: Race Conditions:
+---------------------------------------------------------------------------------------------------
+1. Expected result if 3 threads run it and x was initialized to 12:13. How could it be different?
+ if x == 12:
+      x++
+
+What can go wrong:
+    T1 checks x is equal to 12
+    T1 is interrupted before x++
+    T2 checks x is equal to 12
+    T2 is interrupted before x++
+    T1 increments x to 13
+    T2 increments x to 14
+    T3 is blocked because x isnt == to 12
+
+Solution:
+    lock(m1)
+    if x == 12
+        x++
+        unlock(m1)
+
+2. Expected result if 3 threads run it and x was initialized to 12: 13. How could it be different?
+
+ if x == 12:
+    lock(m1)
+        x++
+        unlock(m1)
+
+what could go wrong:
+    T1 checks if x == 12
+    T1 acquires lock 
+    T2 checks if x == 12
+    T2 blocked from acquiring lock
+    T3 checks if x == 12
+    T2 blocked from acquiring lock
+    T1 increments x to 13
+    T1 unlocks
+    T2 acquires lock
+    T2 increments x to 14
+    T3 acquires lock
+    T3 increments x to 15
+
+
+Solution:
+    lock(m1)
+    if x == 12
+        x++
+        unlock(m1)
+
+3. In this problem, assume the hash itself is already threadsafe.
+Expected result if 3 threads run it and y was not in the hash to start: 14. How could it be different?
+
+if y not in hash:
+    hash[y] = 12
+else
+    hash[y]++
+
+What can go wrong? 
+     T1 checks if y is 12, its not
+     T1 is interrupted 
+     T2 checks if y is 12, its not
+     T2 is interrupted
+     T1 increments y to 15
+     T3 checks if y is 12, its not
+     T2 increments y to 16
+     T3 increments y to 17
+
+Solution:
+lock(m1)
+if y not in hash:
+    hash[y] = 12
+else
+    hash[y]++
+    unlock(m1)
+
+
+4. Expected result if 3 threads run it and x was initialized to 0: 36. How could it be different?
+Hint: what is += shorthand for?
+
+x += 12
+
+what could go wrong:
+    T1 reads x is 0, calculates x is 12
+    T2 interrupts T1
+    T2 reads x is 0, calculates x is 12
+    T3 interrupts T2
+    T3 reads x is 0, calculates x is 12
+    T1 interrupts T3
+    T1 updates x to 12
+
+Solution: 
+    lock(m1)
+    if(x < 36){
+        x += 12
+    }
+    unock(m1)
+    
+
+5. This is an implementation of a semaphore meant to be used by other code.
+
+Restriction: don't use semaphores in your solution—this is an implementation of a semaphore.
+
+Assumption: assume x++ is non-atomic.
+
+semaphore_init() is documented as being not-threadsafe, so you don't have to worry about any races in that particular function.
+
+Assuming just one thread called semaphore_init(1), then no matter how many threads call the signal and wait functions, x should never fall below 0. 
+
+How could that be violated?
+
+For this problem, assume that x++ is not atomic.
+
+Hint: this one is a bit tricky. What other tools in addition to mutexes have we learned about?
+
+semaphore_init(value):
+    x = value
+
+semaphore_signal():
+    x++
+semaphore_wait():
+    while x == 0:
+        do nothing  # spinlock
+    x--
+
+What could go wrong:
+    T1 calls semaphore_init, x = 1, T1 holds the semaphore
+    T1 checks x == 0, false
+    T2 checks x == 0, false
+    T1 decrements x, x is now 0
+    T2 decrements x, x is now -1
+
+    
+
+Solution:
+semaphore_init(value):
+    x = value
+    initalize global_variable
+
+semaphore_wait():
+    lock(m1)
+    while (x == 0){
+        wait(global_variable, m1)
+    }
+    x--
+    unlock(m1)
+semaphore_signal():
+    lock(m1)
+    x++
+    signal(global_variable)
+    unlock(m1)
+
+Part 2: Deadlocks
+---------------------------------------------------------------------------------------------------
+
+1. "Out of Order":
+
+Find a solution without removing the annoying code on lines 12-13, and without adding any more locks or unlocks.
+
+ function1():
+    lock(m1)
+    lock(m2)
+ 
+    unlock(m2)
+    unlock(m1)
+
+    function2():
+        lock(m1)
+        lock(m2)
+
+        unlock(m1)
+        lock(m1)
+
+        unlock(m2)
+        unlock(m1)
+
+what can go wrong:
+    
+    T1 calls function1()
+    T1 locks m1, interrupted before line 161
+    T2 calls function2()
+    T2 tries to lock m1 and is blocked
+    T1 wakes up and locks m2
+    T1 unlocks m2
+    T1 unlocks m1
+    T2 wakes up and locks m1, interrupted before line 168
+    
+    T1 calls function2() 
+    T1 tries to lock m1, blocked
+    T2 wakes up and locks m2
+    T2 unlocks m1, interrupted on line 170
+    T1 wakes up and locks m1, then is blocked trying to lock m2
+    T2 wakes up tries to lock m1 and is blocked
+
+
+
+solution:
+function1():
+    lock(m1)
+    lock(m2)
+ 
+    unlock(m2)
+    unlock(m1)
+
+function2():
+    lock(m1)
+    lock(m2)
+
+    unlock(m1)
+    lock(m1)
+
+    unlock(m2)
+    unlock(m1)
+    
+    
+
+
+2. "Twisting little passages, all different..."
+
+In the following, assume you cannot make the mutexes m1 or m2 global or require the callers to pass them in any exact order.
+
+function1(m1, m2):  # Mutexes are passed in by caller
+        lock(m1)
+        lock(m2)
+
+        unlock(m2)
+        unlock(m1)
+
+what could go wrong:
+    T1 calls function1 with m1 and m2 from caller, locks m1, interrupted on line 222
+    T2 calls function1 with m2 and m1 from caller, locks m2, interrupted on line 222
+    T2 tries to lock m1, blocked 
+    T1 wakes up and tries to lock m2 and is blocked
+
+solution:
+
+function1(m1, m2):  # Mutexes are passed in by caller
+    if (m1 == m2){
+        lock(m1)
+    } else{
+        lock(m2)
+    }
+
+    unlock(m2)
+    unlock(m1)
