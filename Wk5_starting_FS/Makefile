@@ -6,19 +6,19 @@ libvvsfs.a: testfs.o image.o block.o
 
 #object files
 testfs.o: testfs.c image.h block.h ctest.h
-	gcc -Wall -Wextra -Werror -c -o $@ testfs.c
+	gcc -Wall -Wextra -Werror -DCTEST_ENABLE -c -o $@ testfs.c
 
-image.o: image.c image.h block.h
+image.o: image.c image.h block.h ctest.h
 	gcc -Wall -Wextra -Werror -c -o $@ image.c
 
-block.o: block.c block.h image.h
+block.o: block.c block.h image.h ctest.h
 	gcc -Wall -Wextra -Werror -c -o $@ block.c
 
 #link final executable
 testfs: testfs.o libvvsfs.a
 	gcc -o $@ $^
 
-#run tests
+#run make test
 test: testfs
 	./testfs
 
@@ -27,5 +27,5 @@ clean:
 	rm -f *.o
 #clean everything 
 pristine:
-	rm -f *.o testfs .a
+	rm -f testfs libvvsfs.a
 

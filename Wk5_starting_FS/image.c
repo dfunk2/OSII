@@ -5,7 +5,9 @@
 #include <string.h>
 #include "image.h"
 #include "block.h"
+#include "ctest.h"
 
+int image_fd;
 
 int image_open(char *filename, int truncate){ 
     //non-zero is true
@@ -16,10 +18,10 @@ int image_open(char *filename, int truncate){
 
     }
     
-    int image_fd = open(filename, flags, 0600);
+    image_fd = open(filename, flags, 0600);
     if (image_fd == -1){
         perror("Error opening file");
-        return 1;
+        return -1;
     }
 
     return image_fd;

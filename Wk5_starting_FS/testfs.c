@@ -6,11 +6,14 @@
 #ifdef CTEST_ENABLE
 
 void test_image_open(void){
-    CTEST_ASSERT(image_open("image.txt", 2) == 2, "testing image_open");
+    int fd = image_open("test.txt", 1);
+    CTEST_ASSERT(fd >= 0, "image_open ran successfully");
+    CTEST_ASSERT(image_fd == fd, "result of test fd is the same as global fd");
 }
 
 void test_image_close(void){
-    CTEST_ASSERT(image_close() == 0, "testing image_close sucessful");
+    int result = image_close();
+    CTEST_ASSERT(result == 0, "image_close closed successfully");
 }
 
 int main(void){

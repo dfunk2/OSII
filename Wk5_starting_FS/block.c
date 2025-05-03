@@ -5,6 +5,7 @@
 #include <string.h>
 #include "block.h"
 #include "image.h"
+#include "ctest.h"
 
 #define BLOCK_SIZE 4096
 
