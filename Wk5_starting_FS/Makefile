@@ -27,5 +27,5 @@ clean:
 	rm -f *.o
 #clean everything 
 pristine:
-	rm -f testfs *.a
+	rm -f *.o .a
 
