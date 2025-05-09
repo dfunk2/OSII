@@ -1,7 +1,7 @@
 .PHONY: libvvsfs.a clean pristine testfs test
 
 #static library
-libvvsfs.a: testfs.o image.o block.o
+libvvsfs.a: testfs.o image.o block.o free.o
 	ar rcs $@ $^
 
 #object files
@@ -13,6 +13,9 @@ image.o: image.c image.h block.h ctest.h
 
 block.o: block.c block.h image.h ctest.h
 	gcc -Wall -Wextra -Werror -c -o $@ block.c
+
+free.o: free.c free.h image.h block.h ctest.h
+	gcc -Wall -Wextra -Werror -c -o $@ free.c
 
 #link final executable
 testfs: testfs.o libvvsfs.a

@@ -8,6 +8,8 @@
 
 void test_image_open(void);
 void test_image_close(void);
+void test_free(void);
+
 int ctest_pass_count = 0, ctest_fail_count = 0;
 
 int ctest_verbose = 0, ctest_color = 1;
