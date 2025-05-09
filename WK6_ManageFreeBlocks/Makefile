@@ -30,5 +30,5 @@ clean:
 	rm -f *.o
 #clean everything 
 pristine:
-	rm -f *.o testfs libvvsfs.a
+	rm -f *.o testfs libvvsfs.a test.txt
 
