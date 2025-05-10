@@ -1,8 +1,12 @@
 #include <stdio.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
 #include "image.h"
 #include "block.h"
 #include "ctest.h"
 #include "free.h"
+#include "inode.h"
 
 #ifdef CTEST_ENABLE
 
@@ -27,7 +31,20 @@ void test_free(void){
     CTEST_ASSERT(fz == 1, "bit 0 now set to 1, free bit should be 1, fail");
 }
 
+void test_inode(void){
 
+    int result = ialloc(); //assign an inode
+    printf("Allocated inode: %d\n", result);
+    CTEST_ASSERT(result >= 0, "ialloc should return an inode index >= 0");
+}
+
+void test_block(void){
+
+    int result = alloc(); //assign a data block
+    printf("allocated data block: %d\n", result);
+    CTEST_ASSERT(result >= 0, "alloc should return an inode index >= 0");
+
+}
 
 int main(void){
     //call image_open and image_close
@@ -35,6 +52,8 @@ int main(void){
     test_image_open();
     test_image_close();
     test_free();
+    test_inode();
+    test_block();
     CTEST_RESULTS();
     CTEST_EXIT();
 }

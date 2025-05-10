@@ -1,6 +1,7 @@
 #include "block.h"
 #include "image.h"
 #include "ctest.h"
+#include "inode.h"
 #include <stdio.h>
 
 #define BITS_PER_BYTE 8
