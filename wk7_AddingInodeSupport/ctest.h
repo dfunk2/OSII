@@ -13,6 +13,7 @@ void test_inode(void);
 void setup(void);
 void teardown(void);
 void ReadBinaryValues(void);
+void test_incore_inode(void);
 
 int ctest_pass_count = 0, ctest_fail_count = 0;
 
