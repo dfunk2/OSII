@@ -7,8 +7,10 @@
 #include "ctest.h"
 #include "free.h"
 #include "inode.h"
+#include "pack.h"
 
 #ifdef CTEST_ENABLE
+
 
 void test_image_open(void){
     int fd = image_open("test.txt", 1);
@@ -56,6 +58,19 @@ void teardown(void){
     image_close();
 }
 
+//data read in and offset you want to extract a value from
+
+void ReadBinaryValues(void){
+    unsigned char block[4096];
+    int block_num = 3;
+    int offset = 128;
+    bread(block_num, block);
+    unsigned int v = read_u32(block + offset);
+    printf("The value is %u\n", v);
+
+
+}
+
 int main(void){
     //call image_open and image_close
     CTEST_VERBOSE(1);
@@ -64,6 +79,7 @@ int main(void){
     test_free();
     test_inode();
     test_block();
+    ReadBinaryValues();
     CTEST_RESULTS();
     CTEST_EXIT();
 }

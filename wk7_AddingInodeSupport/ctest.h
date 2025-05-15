@@ -12,6 +12,7 @@ void test_free(void);
 void test_inode(void);
 void setup(void);
 void teardown(void);
+void ReadBinaryValues(void);
 
 int ctest_pass_count = 0, ctest_fail_count = 0;
 
