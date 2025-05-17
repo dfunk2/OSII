@@ -46,23 +46,38 @@ void incore_free_all(void){
     }
 
 }
-
-int ialloc(void){
-    //allocate a previously-free inode in the inode map
-    //get inode map, pass 1, thats the inode map block num
+//allocate a free inode in the inode map, set and return pointer to incore inode
+struct inode *ialloc(void){
     unsigned char *inode_map = bread(1, buffer_block);
     //locate a free inode
     int free_inode = find_free(inode_map);
     if (free_inode == -1){
-        return -1;
+        return NULL;
     }
+    //see if existing, read from disk and load to memory
+    struct inode *iget_inode = iget(free_inode);
+    if(iget_inode == NULL){
+        return NULL;
+    }
+
     //mark as used
     set_free(inode_map, free_inode, 1);
-    //save inode back out to disk
+
+    //initalize the inode 
+    iget_inode->size = 0;
+    iget_inode->owner_id = 0;
+    iget_inode->permissions = 0;
+    iget_inode->flags = 0;
+    for(int i = 0; i < INODE_PTR_COUNT; i++){
+        iget_inode->block_ptr[i] = 0;
+    }
+
+    iget_inode->inode_num = free_inode;
+
+    //save inode to disk
     bwrite(1, inode_map);
 
-    return free_inode;
-
+    return iget_inode;
 }
 
 //stores the inode data pointed to by in on disk
@@ -140,8 +155,8 @@ struct inode *iget(int inode_num){
     free->inode_num = inode_num;
     return free;
 }
+
 //opposite of iget(). Free the inode if no one is using it
-//
 void iput(struct inode *in){
     if (in->ref_count == 0){
         return;

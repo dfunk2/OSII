@@ -29,9 +29,9 @@ void set_free(unsigned char *block, int num, int set){
     
 }
 
+//find a 0 bit and return its index (block number that corresponds to this bit)
+//computer global index of bit and return it
 int find_free(unsigned char *block){
-    //find a 0 bit and return its index(block number that corresponds to this bit)
-    //computer global index of bit and return it
     for(int i = 0; i < BYTES_PER_BLOCK; i++){
         for(int j = 0; j < 8; j++){
             int mask = 1 << j;
