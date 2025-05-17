@@ -11,8 +11,9 @@
 
 #define BLOCK_SIZE 4096
 
+ //takes a pointer to a buffer to load with the block data.
 unsigned char *bread(int block_num, unsigned char *block){
-    //takes a pointer to a buffer to load with the block data. 
+    
     if(lseek(image_fd, block_num * BLOCK_SIZE, SEEK_SET) == -1){
         perror("Error seeking in bread()");
         return NULL;

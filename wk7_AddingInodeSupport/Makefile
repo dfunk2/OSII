@@ -17,7 +17,7 @@ block.o: block.c block.h image.h free.h ctest.h
 free.o: free.c free.h image.h block.h ctest.h
 	gcc -Wall -Wextra -Werror -c -o $@ free.c
 
-inode.o: inode.c inode.h block.h free.h ctest.h 
+inode.o: inode.c inode.h block.h free.h pack.h ctest.h 
 	gcc -Wall -Wextra -Werror -c -o $@ inode.c
 
 pack.o: pack.c pack.h block.h free.h image.h ctest.h

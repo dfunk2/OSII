@@ -69,6 +69,32 @@ void test_incore_inode(void){
     CTEST_ASSERT(data->owner_id == 55, "inode owner id matches");
     CTEST_ASSERT(data == result, "same inode");
 }
+
+void test_write_read_inode(void){
+    int inum = ialloc();
+
+    struct inode test_inode;
+
+    test_inode.inode_num = inum;
+    test_inode.size = 5;
+    
+    write_inode(&test_inode);
+
+    struct inode read_inode_result;
+    read_inode(&read_inode_result, inum);
+
+    CTEST_ASSERT(test_inode.size == read_inode_result.size, "value successfully written to disk and updated into in-core inode");
+
+}
+
+void test_iget_iput(void){
+    struct inode *result = iget(3);
+    CTEST_ASSERT(result->ref_count == 1, "sucessfully found or allocated an incore inode");
+    iput(result);
+    CTEST_ASSERT(result->ref_count == 0, "sucessfully deallocated an incore inode");
+
+}
+
 int main(void){
     //call image_open and image_close
     CTEST_VERBOSE(1);
@@ -78,6 +104,8 @@ int main(void){
     test_inode();
     test_block();
     test_incore_inode();
+    test_write_read_inode();
+    test_iget_iput();
     CTEST_RESULTS();
     CTEST_EXIT();
 }
