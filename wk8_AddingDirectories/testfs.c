@@ -8,6 +8,7 @@
 #include "free.h"
 #include "inode.h"
 #include "pack.h"
+#include "dir.h"
 
 #ifdef CTEST_ENABLE
 
@@ -102,6 +103,13 @@ void test_ialloc(void){
 
 }
 
+void test_root_directory(void){
+    root_directory();
+    struct inode *result = ialloc();
+    CTEST_ASSERT(result->inode_num == 0, "successfully allocated root directory inode number");
+
+}
+
 int main(void){
     //call image_open and image_close
     CTEST_VERBOSE(1);
@@ -114,6 +122,7 @@ int main(void){
     //test_write_read_inode();
     test_iget_iput();
     test_ialloc();
+    test_root_directory();
     CTEST_RESULTS();
     CTEST_EXIT();
 }

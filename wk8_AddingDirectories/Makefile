@@ -1,7 +1,7 @@
 .PHONY: libvvsfs.a clean pristine testfs test
 
 #static library
-libvvsfs.a: testfs.o image.o block.o free.o inode.o pack.o
+libvvsfs.a: testfs.o image.o block.o free.o inode.o pack.o dir.o
 	ar rcs $@ $^
 
 #object files
@@ -23,6 +23,9 @@ inode.o: inode.c inode.h block.h free.h pack.h ctest.h
 pack.o: pack.c pack.h block.h free.h image.h ctest.h
 	gcc -Wall -Wextra -Werror -c -o $@ pack.c
 
+dir.o: dir.c dir.h block.h inode.h pack.h ctest.h
+	gcc -Wall -Wextra -Werror -c -o $@ dir.c 
+
 #link final executable
 testfs: testfs.o libvvsfs.a
 	gcc -o $@ $^
@@ -36,5 +39,5 @@ clean:
 	rm -f *.o
 #clean everything 
 pristine:
-	rm -f *.o testfs libvvsfs.a test.txt README.txt
+	rm -f *.o testfs libvvsfs.a test.txt 
 
