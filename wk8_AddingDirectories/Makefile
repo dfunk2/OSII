@@ -1,7 +1,7 @@
 .PHONY: libvvsfs.a clean pristine testfs test
 
 #static library
-libvvsfs.a: testfs.o image.o block.o free.o inode.o pack.o dir.o
+libvvsfs.a: testfs.o image.o block.o free.o inode.o pack.o dir.o 
 	ar rcs $@ $^
 
 #object files

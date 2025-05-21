@@ -2,11 +2,12 @@
 #define DIR_H
 
 struct directory {
-    int inode_num; //2 bytes
-    char name[16]; //16 bytes
-    int reserved; //14 bytes
+    struct inode *inode;
+    unsigned int offset;
 };
 
 void root_directory(void);
+struct directory *directory_open(int inode_num);
+void directory_close(struct directory *d);
 
 #endif

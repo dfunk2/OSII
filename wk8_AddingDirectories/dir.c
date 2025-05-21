@@ -3,8 +3,8 @@
 #include "inode.h"
 #include "dir.h"
 #include "pack.h"
-#include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define BLOCK_SIZE 4096
 
@@ -16,7 +16,7 @@ void root_directory(void){
     int block_num = alloc();
 
     //intialize to hold correct metadata
-    inum->flags = 2;
+    inum->flags = 2; //file is directory
     inum->size = 64; //two 32 byte records for one directory
     inum->block_ptr[0] = block_num;
 
@@ -37,4 +37,30 @@ void root_directory(void){
 
     //free up incore inode
     iput(inum);
+}
+
+struct directory *directory_open(int inode_num){
+    //get inode for file
+    struct inode *dir_inode = iget(inode_num);
+    if(dir_inode == NULL){
+        return NULL;
+    }
+    //make space for new struct directory
+    struct directory *new_dir = malloc(sizeof(struct directory));
+    if(new_dir == NULL){
+        printf("memory allocation for new struct directory failed");
+        return NULL;
+    }
+
+    //initialize struct dir data
+    new_dir->inode = dir_inode;
+    new_dir->offset = 0;
+
+    //return pointer to the struct
+    return new_dir;
+}
+
+void directory_close(struct directory *d){
+    iput(d);
+    free(d);
 }
