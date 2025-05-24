@@ -7,10 +7,9 @@
 #include <stdlib.h>
 
 #define BLOCK_SIZE 4096
+#define ENTRY_SIZE 32
 
 void root_directory(void){
-    unsigned char buffer_block[BLOCK_SIZE] = {0};
-
     //ialloc inode
     struct inode *inum = ialloc(); //should be 0
 
@@ -23,7 +22,8 @@ void root_directory(void){
     inum->block_ptr[0] = block_num;
 
     //write the directory entries to an in-memory block
-    
+    unsigned char buffer_block[BLOCK_SIZE] = {0};
+
     //first directory entry
     write_u16(buffer_block + 0, inum->inode_num);
     char fndot[] = ".";
@@ -65,4 +65,23 @@ struct directory *directory_open(int inode_num){
 void directory_close(struct directory *d){
     iput(d->inode);
     free(d);
+}
+
+//Directory get function
+int directory_get(struct directory *dir, struct directory_entry *ent) {
+    if (dir->offset >= dir->inode->size) return -1;
+
+    int data_block_index = dir->offset / BLOCK_SIZE;
+    int data_block_num = dir->inode->block_ptr[data_block_index];
+    unsigned char block[BLOCK_SIZE];
+
+    bread(data_block_num, block);
+
+    int offset_in_block = dir->offset % BLOCK_SIZE;
+
+    ent->inode_num = read_u16(block + offset_in_block);
+    strcpy(ent->name, (char *)(block + offset_in_block + 2));
+
+    dir->offset += ENTRY_SIZE;
+    return 0;
 }
