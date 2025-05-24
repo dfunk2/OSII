@@ -1,4 +1,3 @@
-# Makefile for VVSFS Project
 .PHONY: all clean pristine test ls
 
 # Compiler and flags
@@ -20,7 +19,7 @@ TEST_OBJ = $(TEST_MAIN:.c=.o)
 LS_SRC = ls.c
 LS_OBJ = $(LS_SRC:.c=.o)
 
-# Header dependencies (auto-detected with -MMD if needed)
+# Header dependencies
 HEADERS = image.h block.h free.h inode.h pack.h dir.h ctest.h
 
 # Default build
@@ -34,7 +33,7 @@ $(LIB): $(OBJS)
 $(TEST_OBJ): $(TEST_MAIN)
 	$(CC) $(CFLAGS) $(CTEST_FLAGS) -c -o $@ $<
 
-# Compile ls (optional tool)
+# Compile ls
 $(LS_OBJ): $(LS_SRC)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
@@ -42,7 +41,7 @@ $(LS_OBJ): $(LS_SRC)
 $(TARGET): $(TEST_OBJ) $(LIB)
 	$(CC) -o $@ $^
 
-# Optional ls binary for testing directory output
+# Ls binary for testing directory output
 ls: $(LS_OBJ) $(LIB)
 	$(CC) -o $@ $^
 
