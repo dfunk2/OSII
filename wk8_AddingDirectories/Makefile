@@ -1,50 +1,59 @@
-.PHONY: libvvsfs.a clean pristine testfs test
+# Makefile for VVSFS Project
+.PHONY: all clean pristine test ls
 
-#static library
-libvvsfs.a: testfs.o image.o block.o free.o inode.o pack.o dir.o 
+# Compiler and flags
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -std=c99
+CTEST_FLAGS = -DCTEST_ENABLE
+
+# Output files
+TARGET = testfs
+LIB = libvvsfs.a
+
+# Source and object files
+SRCS = image.c block.c free.c inode.c pack.c dir.c
+OBJS = $(SRCS:.c=.o)
+
+TEST_MAIN = testfs.c
+TEST_OBJ = $(TEST_MAIN:.c=.o)
+
+LS_SRC = ls.c
+LS_OBJ = $(LS_SRC:.c=.o)
+
+# Header dependencies (auto-detected with -MMD if needed)
+HEADERS = image.h block.h free.h inode.h pack.h dir.h ctest.h
+
+# Default build
+all: $(TARGET)
+
+# Build static library
+$(LIB): $(OBJS)
 	ar rcs $@ $^
 
-#object files
-testfs.o: testfs.c image.h block.h ctest.h dir.h
-	gcc -Wall -Wextra -Werror -DCTEST_ENABLE -c -o $@ testfs.c
+# Compile testfs main with testing flags
+$(TEST_OBJ): $(TEST_MAIN)
+	$(CC) $(CFLAGS) $(CTEST_FLAGS) -c -o $@ $<
 
-image.o: image.c image.h block.h ctest.h
-	gcc -Wall -Wextra -Werror -c -o $@ image.c
+# Compile ls (optional tool)
+$(LS_OBJ): $(LS_SRC)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-block.o: block.c block.h image.h free.h ctest.h
-	gcc -Wall -Wextra -Werror -c -o $@ block.c
+# Link final testfs executable
+$(TARGET): $(TEST_OBJ) $(LIB)
+	$(CC) -o $@ $^
 
-free.o: free.c free.h image.h block.h ctest.h
-	gcc -Wall -Wextra -Werror -c -o $@ free.c
+# Optional ls binary for testing directory output
+ls: $(LS_OBJ) $(LIB)
+	$(CC) -o $@ $^
 
-inode.o: inode.c inode.h block.h free.h pack.h ctest.h 
-	gcc -Wall -Wextra -Werror -c -o $@ inode.c
+# Run test binary
+test: $(TARGET)
+	./$(TARGET)
 
-pack.o: pack.c pack.h block.h free.h image.h ctest.h
-	gcc -Wall -Wextra -Werror -c -o $@ pack.c
-
-dir.o: dir.c dir.h block.h inode.h pack.h ctest.h
-	gcc -Wall -Wextra -Werror -c -o $@ dir.c 
-
-ls.o: ls.c dir.h
-	gcc -Wall -Wextra -Werror -c -o $@ ls.c
-
-
-#link final executable
-testfs: testfs.o libvvsfs.a
-	gcc -o $@ $^
-
-#run make test
-test: testfs
-	./testfs
-
-ls: ls.o libvvsfs.a
-	gcc -o ls ls.o libvvsfs.a
-
-#cleans objects
+# Remove intermediate object files
 clean:
 	rm -f *.o
-#clean everything 
-pristine:
-	rm -f *.o testfs libvvsfs.a test.txt 
 
+# Remove all build outputs
+pristine: clean
+	rm -f $(TARGET) $(LIB) test.txt ls
