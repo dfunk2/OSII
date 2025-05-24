@@ -5,7 +5,7 @@ libvvsfs.a: testfs.o image.o block.o free.o inode.o pack.o dir.o
 	ar rcs $@ $^
 
 #object files
-testfs.o: testfs.c image.h block.h ctest.h
+testfs.o: testfs.c image.h block.h ctest.h dir.h
 	gcc -Wall -Wextra -Werror -DCTEST_ENABLE -c -o $@ testfs.c
 
 image.o: image.c image.h block.h ctest.h
