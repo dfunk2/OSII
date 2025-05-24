@@ -5,6 +5,7 @@
 #include "pack.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #define BLOCK_SIZE 4096
 #define ENTRY_SIZE 32
