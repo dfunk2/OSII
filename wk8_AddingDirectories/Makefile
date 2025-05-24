@@ -26,6 +26,10 @@ pack.o: pack.c pack.h block.h free.h image.h ctest.h
 dir.o: dir.c dir.h block.h inode.h pack.h ctest.h
 	gcc -Wall -Wextra -Werror -c -o $@ dir.c 
 
+ls.o: ls.c dir.h
+	gcc -Wall -Wextra -Werror -c -o $@ ls.c
+
+
 #link final executable
 testfs: testfs.o libvvsfs.a
 	gcc -o $@ $^

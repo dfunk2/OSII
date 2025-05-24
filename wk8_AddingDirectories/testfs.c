@@ -109,6 +109,23 @@ void test_root_directory(void){
     CTEST_ASSERT(result->inode_num == 0, "successfully allocated root directory inode number");
 
 }
+void test_directory_get(void){
+    struct directory *dir = directory_open(0);
+    struct directory_entry ent;
+
+    int got = directory_get(dir, &ent);
+    CTEST_ASSERT(got == 0, "directory_get returns 0 for first entry");
+    CTEST_ASSERT(strcmp(ent.name, ".") == 0 || strcmp(ent.name, "..") == 0, "entry name is valid");
+
+    got = directory_get(dir, &ent);
+    CTEST_ASSERT(got == 0, "directory_get returns 0 for second entry");
+    CTEST_ASSERT(strcmp(ent.name, ".") == 0 || strcmp(ent.name, "..") == 0, "entry name is valid");
+
+    got = directory_get(dir, &ent);
+    CTEST_ASSERT(got == -1, "directory_get returns -1 after entries are read");
+
+    directory_close(dir);
+}
 
 int main(void){
     //call image_open and image_close
@@ -125,6 +142,7 @@ int main(void){
     test_root_directory();
     CTEST_RESULTS();
     CTEST_EXIT();
+    test_directory_get();
 }
 
 #else 
