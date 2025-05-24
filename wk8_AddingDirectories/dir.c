@@ -63,6 +63,6 @@ struct directory *directory_open(int inode_num){
 }
 
 void directory_close(struct directory *d){
-    iput(d);
+    iput(d->inode);
     free(d);
 }
