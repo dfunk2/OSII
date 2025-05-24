@@ -38,6 +38,9 @@ testfs: testfs.o libvvsfs.a
 test: testfs
 	./testfs
 
+ls: ls.o libvvsfs.a
+	gcc -o ls ls.o libvvsfs.a
+
 #cleans objects
 clean:
 	rm -f *.o
