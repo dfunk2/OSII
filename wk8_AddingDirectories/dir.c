@@ -9,6 +9,8 @@
 #define BLOCK_SIZE 4096
 
 void root_directory(void){
+    unsigned char buffer_block[BLOCK_SIZE] = {0};
+
     //ialloc inode
     struct inode *inum = ialloc(); //should be 0
 
