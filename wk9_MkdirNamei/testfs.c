@@ -104,7 +104,7 @@ void test_ialloc(void){
 }
 
 void test_mkdir(void){
-    root_directory();
+    mkdir();
     struct inode *result = ialloc();
     CTEST_ASSERT(result->inode_num == 0, "successfully allocated root directory inode number");
 
@@ -127,6 +127,12 @@ void test_directory_get(void){
     directory_close(dir);
 }
 
+void test_namei(void){
+    char *path = "/";
+    struct inode* incore_inode_rootdir = namei(path);
+    CTEST_ASSERT(incore_inode_rootdir != NULL, "successfully found incore inode for root director");
+}
+
 int main(void){
     //call image_open and image_close
     CTEST_VERBOSE(1);
@@ -139,7 +145,8 @@ int main(void){
     //test_write_read_inode();
     test_iget_iput();
     test_ialloc();
-    test_root_directory();
+    test_mkdir();
+    test_namei();
     CTEST_RESULTS();
     CTEST_EXIT();
     test_directory_get();

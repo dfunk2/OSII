@@ -17,6 +17,7 @@ void test_write_read_inode(void);
 void test_iget_iput(void);
 void test_ialloc(void);
 void test_mkdir(void);
+void test_namei(void);
 
 int ctest_pass_count = 0, ctest_fail_count = 0;
 

@@ -9,6 +9,7 @@
 
 #define BLOCK_SIZE 4096
 #define ENTRY_SIZE 32
+#define ROOT_INODE_NUM 0
 
 void mkdir(void){
     //ialloc inode
@@ -81,6 +82,21 @@ int directory_get(struct directory *dir, struct directory_entry *ent) {
     dir->offset += ENTRY_SIZE;
     return 0;
 }
+
+struct inode *namei(char *path){
+
+    //return root directory inode
+    struct inode *inode;
+    if(strcmp(path, "/") == 0) {
+        return inode = iget(ROOT_INODE_NUM);
+    } else {
+        return NULL;
+    }
+    //parse other paths 
+    //const char *token = strtok(path, "/");
+}
+
+
 
 void directory_close(struct directory *d){
     iput(d->inode);
