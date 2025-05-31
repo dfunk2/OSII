@@ -103,8 +103,8 @@ void test_ialloc(void){
 
 }
 
-void test_mkdir(void){
-    mkdir();
+void test_mkfs(void){
+    mkfs();
     struct inode *result = ialloc();
     CTEST_ASSERT(result->inode_num == 0, "successfully allocated root directory inode number");
 

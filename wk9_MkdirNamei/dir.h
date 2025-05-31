@@ -11,10 +11,13 @@ struct directory_entry {
     char name[16];
 };
 
-void mkdir(void);
+void mkfs(void);
 struct directory *directory_open(int inode_num);
 int directory_get(struct directory *dir, struct directory_entry *ent);
 void directory_close(struct directory *d);
 struct inode *namei(char *path);
+char *get_dirname(const char *path, char *dirname);
+char *get_basename(const char *path, char *basename);
+int directory_make(char *path);
 
 #endif

@@ -10,6 +10,7 @@
 #include "free.h"
 
 #define BLOCK_SIZE 4096
+#define FREE_BLOCK_MAP_NUM 2
 
  //takes a pointer to a buffer to load with the block data.
 unsigned char *bread(int block_num, unsigned char *block){
@@ -53,7 +54,7 @@ int alloc(void){
     //mark as used
     set_free(data_map, free_data, 1);
     //save inode back out to disk
-    bwrite(2, data_map);
+    bwrite(FREE_BLOCK_MAP_NUM, data_map);
 
     return free_data;
 
