@@ -1,1 +1,1 @@
-Implementing a Very, Very Simple File System (VVSFS). Week 5: Create the file for holding the simulated file system. Week 6: Managing free blocks. Week 7: Adding inode support. Week 8: Adding directories. 
+Implementing a Very, Very Simple File System (VVSFS). Week 5: Create the file for holding the simulated file system. Week 6: Managing free blocks. Week 7: Adding inode support. Week 8: Adding directories. Week 9: Making subdirectories (mkdir) and namei() which maps a path to an inode. 
