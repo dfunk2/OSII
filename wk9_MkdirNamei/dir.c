@@ -85,39 +85,54 @@ int directory_get(struct directory *dir, struct directory_entry *ent) {
 
 struct inode *namei(char *path){
 
-    //return root directory inode
-    //struct inode *inode;
-    if(strcmp(path, "/") == 0) {
+    if (strcmp(path, "/") == 0) {
         return iget(ROOT_INODE_NUM);
     }
 
-    // getting a single component assuming one level
-    char name[16];
-    get_basename(path,name);
+    char name[64];
+    strncpy(name, path, sizeof(name));
+    char *token = strtok(name, "/");
+    
 
+    //start from root inode 
+    struct inode *curr = iget(ROOT_INODE_NUM);
+
+    while(token != NULL){
+        struct directory *dir = directory_open(curr->inode_num);
+        if(!dir) {
+            iput(curr); 
+            return NULL;
+        }
+    
+        struct directory_entry ent;
+  
+        while(directory_get(dir, &ent) == 0){
+            if(strcmp(ent.name, token) == 0){
+                struct inode *next = iget(ent.inode_num);
+                if(!next){
+                    directory_close(dir);
+                    iput(curr);
+                    return NULL;
+                }
+                iput(curr);
+                curr = next;
+                break;
+            } 
+        }
+        directory_close(dir);
+        token = strtok(NULL, "/"); 
+    }
+    return curr;
 
     //old
+    // getting a single component assuming one level
+    //get_basename(path,name);
+
     // //Assuming only /name structure
     // if (path[0] != '/') return NULL;
 
-    struct directory *rootdir = directory_open(ROOT_INODE_NUM);
-    if (!rootdir) return NULL;
-
-    struct directory_entry ent;
-    //old
     // char target[16];
     // get_basename(path, target);
-
-    while (directory_get(rootdir, &ent) == 0){
-        if(strcmp(ent.name, name) == 0) {
-            struct inode *result = iget(ent.inode_num);
-            directory_close(rootdir);
-            return result;
-        }
-    }
-
-    directory_close(rootdir);
-    return NULL; 
 }
 
 //helper function, returns every component of path except last one
@@ -204,6 +219,7 @@ int directory_make(char *path){
     bwrite(data_block, block);
 
     parent->size += 32;
+    
     iput(parent);
 
     return 0;

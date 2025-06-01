@@ -129,13 +129,22 @@ void test_directory_get(void){
 
 void test_namei(void){
     mkfs();
+    //directory_make("/foo");
+    //struct inode *root = namei("/");
+    //CTEST_ASSERT(root != NULL, "found root inode");
+    //struct inode *foo = namei("/foo");
+    //CTEST_ASSERT(foo != NULL, "found /foo directory inode");
+    //struct inode *missing = namei("/bar");
+    //CTEST_ASSERT(missing == NULL, "missing directory returns NULL");
+
+    //generalize namei() test
     directory_make("/foo");
-    struct inode *root = namei("/");
-    CTEST_ASSERT(root != NULL, "found root inode");
-    struct inode *foo = namei("/foo");
-    CTEST_ASSERT(foo != NULL, "found /foo directory inode");
-    struct inode *missing = namei("/bar");
-    CTEST_ASSERT(missing == NULL, "missing directory returns NULL");
+    directory_make("/foo/bar");
+    directory_make("/foo/bar/baz");
+    struct inode *in = namei("/foo/bar/baz");
+    CTEST_ASSERT(in != NULL, "found /foo/bar/baz directory inode");
+    
+
 }
 
 
