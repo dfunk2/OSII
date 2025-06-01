@@ -88,24 +88,40 @@ struct inode *namei(char *path){
     //return root directory inode
     struct inode *inode;
     if(strcmp(path, "/") == 0) {
-        return inode = iget(ROOT_INODE_NUM);
-    } else {
-        return NULL;
+        return iget(ROOT_INODE_NUM);
     }
 
+    //Assuming only /name structure
+    if (path[0] != '/') return NULL;
+
     struct directory *rootdir = directory_open(ROOT_INODE_NUM);
-    
-    //parse other paths 
-    const char *token = strtok(path, "/");
-    while(rootdir != NULL){
-        if(rootdir == token){
-            char* p = strcpy(path, token);
-            //link path to inode number 
-            //return result from iget()
-        }else {
-            return NULL;
+    if (!rootdir) return NULL;
+
+    struct directory_entry ent;
+    char target[16];
+    get_basename(path, target);
+
+    while (directory_get(rootdir, &ent) == 0){
+        if(strcmp(ent.name, target) == 0) {
+            directory_close(rootdir);
+            return iget(ent.inode_num);
         }
-    } 
+    }
+
+    directory_close(rootdir);
+    return NULL;
+
+    //parse other paths 
+    // const char *token = strtok(path, "/");
+    // while(rootdir != NULL){
+    //     if(rootdir == token){
+    //         char* p = strcpy(path, token);
+    //         //link path to inode number 
+    //         //return result from iget()
+    //     }else {
+    //         return NULL;
+    //     }
+    // } 
 }
 
 //helper function, returns every component of path except last one
