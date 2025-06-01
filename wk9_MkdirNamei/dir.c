@@ -165,27 +165,77 @@ char *get_basename(const char *path, char *basename) {
 
 
 int directory_make(char *path){
-    struct inode *FIncoreInode = namei(path);
-    struct inode *new_inode = ialloc();
-    int new_block = alloc();
+    if (path[0] != '/') return -1;
 
-    //create a new block-sized array for the new directory data block and initialize it
-    unsigned int buffer_block[BLOCK_SIZE] = {0};
+    char dirname[64], basename[16];
+    get_dirname(path, dirname);
+    get_basename(path, basename);
 
-    write_u16(buffer_block+ 0, new_inode->inode_num);
-    char currdir[] = ".";
-    strcpy((char*)buffer_block + 2, currdir);
+    struct inode *parent = namei(dirname);
+    if (!parent) return -1;
 
-    write_u16(buffer_block + 32, new_inode->inode_num);
-    char parentdir[] = "..";
-    strcpy((char*)buffer_block + 34, parentdir);
+    struct inode *child = ialloc();
+    if (!child){
+        iput(parent);
+        return -1;
+    }
 
-    //intialize incore inode with proper metadata
-    new_inode->flags = 2;
-    new_inode->size = 64;
-    new_inode->block_ptr[0] = new_block;
+    int block_num = alloc();
+    if(block_num == -1){
+        iput(parent);
+        iput(child);
+        return -1;
+    }
 
-    bwrite(new_block, buffer_block);
+    unsigned char block[BLOCK_SIZE] = {0};
+    write_u16(block + 0, child->inode_num);
+    strcpy((char *)(block +2), ".");
+    write_u16(block +32, parent->inode_num);
+    strcpy((char *)(block + 34), "..");
+    bwrite(block_num, block);
+
+    child ->flags = 2;
+    child->size = 64;
+    child->block_ptr[0] = block_num;
+    iput(child);
+
+    //Adding entry to parent
+    int offset = parent->size;
+    int data_block= parent->block_ptr[0];
+    bread(data_block, block);
+    write_u16(block + offset, child->inode_num);
+    strcpy((char *)(block + offset +2), basename);
+    bwrite(data_block, block);
+
+    parent->size += 32;
+    iput(parent);
+
+    return 0;
+
+
+
+//old code
+    // struct inode *FIncoreInode = namei(path);
+    // struct inode *new_inode = ialloc();
+    // int new_block = alloc();
+
+    // //create a new block-sized array for the new directory data block and initialize it
+    // unsigned int buffer_block[BLOCK_SIZE] = {0};
+
+    // write_u16(buffer_block+ 0, new_inode->inode_num);
+    // char currdir[] = ".";
+    // strcpy((char*)buffer_block + 2, currdir);
+
+    // write_u16(buffer_block + 32, new_inode->inode_num);
+    // char parentdir[] = "..";
+    // strcpy((char*)buffer_block + 34, parentdir);
+
+    // //intialize incore inode with proper metadata
+    // new_inode->flags = 2;
+    // new_inode->size = 64;
+    // new_inode->block_ptr[0] = new_block;
+
+    // bwrite(new_block, buffer_block);
 
 }
 
