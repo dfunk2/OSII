@@ -128,10 +128,20 @@ void test_directory_get(void){
 }
 
 void test_namei(void){
-    char *path = "/";
-    struct inode* incore_inode_rootdir = namei(path);
-    CTEST_ASSERT(incore_inode_rootdir != NULL, "successfully found incore inode for root director");
+    mkfs();
+    directory_make("/foo");
+    struct inode *root = namei("/");
+    CTEST_ASSERT(root != NULL, "found root inode");
+    struct inode *foo = namei("/foo");
+    CTEST_ASSERT(foo != NULL, "found /foo directory inode");
+    struct inode *missing = namei("/bar");
+    CTEST_ASSERT(missing == NULL, "missing directory returns NULL");
 }
+//old test namei
+//     char *path = "/";
+//     struct inode* incore_inode_rootdir = namei(path);
+//     CTEST_ASSERT(incore_inode_rootdir != NULL, "successfully found incore inode for root director");
+// }
 
 int main(void){
     //call image_open and image_close
