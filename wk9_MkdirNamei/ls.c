@@ -38,3 +38,19 @@ void ls(const char *path) {
 
     // directory_close(dir);
 }
+
+int main(int argc, char *argv[]){
+    if (argc != 2){
+        printf("Usage: ls <path>\n");
+        return 1;
+    }
+
+    if (image_open("test.txt", 0) == -1){
+        printf("Failed to open filesystem image.\n");
+        return 1;
+    }
+
+    ls(argv[1]);
+    image_close();
+    return 0;
+}
