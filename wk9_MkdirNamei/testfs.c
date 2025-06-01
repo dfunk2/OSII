@@ -137,11 +137,7 @@ void test_namei(void){
     struct inode *missing = namei("/bar");
     CTEST_ASSERT(missing == NULL, "missing directory returns NULL");
 }
-//old test namei
-//     char *path = "/";
-//     struct inode* incore_inode_rootdir = namei(path);
-//     CTEST_ASSERT(incore_inode_rootdir != NULL, "successfully found incore inode for root director");
-// }
+
 
 int main(void){
     //call image_open and image_close
@@ -155,7 +151,7 @@ int main(void){
     //test_write_read_inode();
     test_iget_iput();
     test_ialloc();
-    test_mkdir();
+    test_mkfs();
     test_namei();
     CTEST_RESULTS();
     CTEST_EXIT();

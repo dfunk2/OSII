@@ -86,12 +86,12 @@ int directory_get(struct directory *dir, struct directory_entry *ent) {
 struct inode *namei(char *path){
 
     //return root directory inode
-    struct inode *inode;
+    //struct inode *inode;
     if(strcmp(path, "/") == 0) {
         return iget(ROOT_INODE_NUM);
     }
 
-    // getting a signle componet assuming one level
+    // getting a single component assuming one level
     char name[16];
     get_basename(path,name);
 
@@ -117,19 +117,7 @@ struct inode *namei(char *path){
     }
 
     directory_close(rootdir);
-    return NULL;
-
-    //parse other paths 
-    // const char *token = strtok(path, "/");
-    // while(rootdir != NULL){
-    //     if(rootdir == token){
-    //         char* p = strcpy(path, token);
-    //         //link path to inode number 
-    //         //return result from iget()
-    //     }else {
-    //         return NULL;
-    //     }
-    // } 
+    return NULL; 
 }
 
 //helper function, returns every component of path except last one
@@ -219,31 +207,6 @@ int directory_make(char *path){
     iput(parent);
 
     return 0;
-
-
-
-//old code
-    // struct inode *FIncoreInode = namei(path);
-    // struct inode *new_inode = ialloc();
-    // int new_block = alloc();
-
-    // //create a new block-sized array for the new directory data block and initialize it
-    // unsigned int buffer_block[BLOCK_SIZE] = {0};
-
-    // write_u16(buffer_block+ 0, new_inode->inode_num);
-    // char currdir[] = ".";
-    // strcpy((char*)buffer_block + 2, currdir);
-
-    // write_u16(buffer_block + 32, new_inode->inode_num);
-    // char parentdir[] = "..";
-    // strcpy((char*)buffer_block + 34, parentdir);
-
-    // //intialize incore inode with proper metadata
-    // new_inode->flags = 2;
-    // new_inode->size = 64;
-    // new_inode->block_ptr[0] = new_block;
-
-    // bwrite(new_block, buffer_block);
 
 }
 

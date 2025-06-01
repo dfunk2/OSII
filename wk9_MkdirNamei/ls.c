@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "dir.h"
 #include "inode.h"
+#include "image.h"
 
 void ls(const char *path) {
     struct inode *inode = namei((char *)path);
