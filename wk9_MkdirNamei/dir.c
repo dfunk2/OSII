@@ -91,20 +91,28 @@ struct inode *namei(char *path){
         return iget(ROOT_INODE_NUM);
     }
 
-    //Assuming only /name structure
-    if (path[0] != '/') return NULL;
+    // getting a signle componet assuming one level
+    char name[16];
+    get_basename(path,name);
+
+
+    //old
+    // //Assuming only /name structure
+    // if (path[0] != '/') return NULL;
 
     struct directory *rootdir = directory_open(ROOT_INODE_NUM);
     if (!rootdir) return NULL;
 
     struct directory_entry ent;
-    char target[16];
-    get_basename(path, target);
+    //old
+    // char target[16];
+    // get_basename(path, target);
 
     while (directory_get(rootdir, &ent) == 0){
-        if(strcmp(ent.name, target) == 0) {
+        if(strcmp(ent.name, name) == 0) {
+            struct inode *result = iget(ent.inode_num);
             directory_close(rootdir);
-            return iget(ent.inode_num);
+            return result;
         }
     }
 
